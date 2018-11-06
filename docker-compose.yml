@@ -1,0 +1,42 @@
+# Access via "http://localhost:8080"
+#   (or "http://$(docker-machine ip):8080" if using docker-machine)
+
+# During initial Drupal setup,
+# Database type: PostgreSQL
+# Database name: postgres
+# Database username: postgres
+# Database password: password
+# ADVANCED OPTIONS; Database host: postgres
+
+version: '3.1'
+
+services:
+
+  netadm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: netadm
+    ports:
+      - 8080:80
+    volumes:
+      - netadm-modules:/var/www/html/modules
+      - netadm-profiles:/var/www/html/profiles
+      - netadm-themes:/var/www/html/themes
+      - netadm-sites:/var/www/html/sites
+    restart: always
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: borg8472
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+      netadm-modules:
+      netadm-profiles:
+      netadm-themes:
+      netadm-sites:
+      psql-data:
