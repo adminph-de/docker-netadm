@@ -1,0 +1,245 @@
+#
+# Dette script er et grep-værktøj til alle vores host-aliases
+#     /home/pub/net129/profile/hosts
+# Help: skriv a -h
+#
+
+
+LNUM=0
+LNR=0
+KND=""
+KND1=""
+KND2=""
+TEMPFILE0=/tmp/a0.$USER.$$
+TEMPFILE1=/tmp/a1.$USER.$$
+echo "User: $USER - "`date` >> /tmp/a.Userliste
+chmod 666  /tmp/a.Userliste 1>/dev/null 2>/dev/null
+trap 'rm -f "$TEMPFILE0" "$TEMPFILE1" 1>/dev/null 2>&1; exit' 0 1 2 3 15
+
+
+HELP() {
+  echo ""
+  echo "usage: a <hostname> [<num>]"
+  echo "       <hostname>: Det hostname eller den IP-adresse du søger efter"
+  echo "            <num>: Telnet eller ssh til den enhed som har nummer: <num> fra listen"
+  echo ""
+  echo "usage: a -e      : Edit hostfile:  vi /home/pub/net129/profile/hosts"
+  echo "usage: a -h      : Help (This)"
+  echo ""
+  echo "Et eksempel på en søgning: "
+  echo " a DMD-san"
+  echo "Finder linier med: dmd-san og dmdsan"
+  echo " # dmdsan"
+  echo "    1  alias  dm-e3-sanmgmt-sw3         telnet  10.180.14.11 # dmdsan + mslsan"
+  echo "    2  alias  dm-e-m3-sanmgmt-sw2       telnet  10.180.14.10 # dmdsan + mslsan"
+  echo "    3  alias  dm-e-m2-sanmgmt-sw1       telnet  10.180.14.9 # dmdsan + mslsan"
+  echo "    4  alias  dm-p-m1-sanmgmt-sw1       telnet  10.180.15.9 # dmdsan + mslsan"
+  echo "    5  alias  dm-p-m1-sanmgmt-sw3       telnet  10.180.15.11 # dmdsan + mslsan"
+  echo "    6  alias  dm-p-m2-sanmgmt-sw2       telnet  10.180.15.10 # dmdsan + mslsan"
+  echo ""
+  echo "Bemærk at hvis der indgår '-' i søgningen, findes både linier med og uden '-',"
+  echo "og at søgningen ikke er case sensitive."
+  echo ""
+  echo "Et eksempel på access til en box:"
+  echo "Gentag tidligere søgningen men tilføj et 3-tal for at få access til box'en i 3. linie"
+  echo ""
+  echo "  a DMD-san 3"
+  echo "  3  alias dm-e-m2-sanmgmt-sw1  telnet 10.180.14.9     # dmdsan + mslsan"
+  echo ""
+  echo "Alias no.: 3    Host: dm-e-m2-sanmgmt-sw1"
+  echo "Command  : telnet 10.180.14.9"
+  echo ""
+  echo "Continue? y/n"
+  echo "Tryk <retur> og du har access til box fra linie 3 i den første søgning."
+  echo ""
+
+}
+if [ "$1" != "" ]
+then
+
+  case "$*" in
+                -e|-E) vi /usr/local/fls/hosts;exit 0;;
+    -h|-H|--help|'/?') HELP; exit 2;;
+             '-'|'-'*) EARG='-e';;
+  esac
+  if [ "$#" = 1 ]
+  then
+    KND="$1"
+  elif [ "$#" = 2 ]
+  then
+    case "$2" in
+      [1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]) KND="$1"; LNUM="$2";;
+                                                                                    *) KND="$2";;
+    esac
+  #elif [ "$#" = 3 ]
+  #then
+  #  case "$3" in
+  #    [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) KND="$2"; LNUM="$3";;
+  #                                  *) echo "antal args: $#  - $*"; HELP; exit 2;;
+  #  esac
+  else
+    #TST=`grep -e "\"$*\"" /home/pub/net129/profile/hosts 2>/dev/null`
+    #if [ "$TST" != "" ]
+    #then
+    #  KND=`expr "$TST" : "alias \(.*\)=.*"`
+      ##LINJE=`expr "$LINJE" : ".* alias \(.*\)"`
+      ##echo "$KND"
+      ##alias sw1.arl.dk="dkccqsw011arlfm"
+    #else
+      echo "antal args: $# ($*)"
+      HELP
+      exit 2
+    #fi
+  fi
+  KND=`echo "$KND" | awk '{print tolower($0)}'`
+            #*'-') ALIAS=`cat /home/pub/net129/profile/hosts | awk '{print tolower($0)}' | grep "$KND"`;;
+  case "$KND" in
+            *'-'*) KND1="$KND";
+                   KND2=`echo "$KND" | tr -d '-'`;
+                   cat /usr/local/fls/hosts | awk '{print tolower($0)}' | grep $EARG "$KND1" >  "$TEMPFILE1";
+#                   cat /home/cdp/FLS/profile/hosts | awk '{print tolower($0)}' | grep $EARG "$KND2" >> "$TEMPFILE1";
+                   ALIAS=`cat "$TEMPFILE1"`;;
+                *) ALIAS=`cat /usr/local/fls/hosts | awk '{print tolower($0)}' | grep $EARG "$KND"`;;
+
+
+  esac
+else
+  ALIAS=`cat /usr/local/fls/hosts`
+fi
+
+if [ "$LNUM" = 0 -a "$KND1" != "" -a "$KND2" != "" ]
+then echo "Finder linier med: $KND1 og $KND2"
+elif [ "$LNUM" = 0 -a "$KND1" != "" -a "$KND2" = "" ]
+then echo "Finder linier med: $KND1"
+elif [ "$LNUM" = 0 -a "$KND" != "" ]
+then echo "Finder linier med: $KND"
+elif [ "$LNUM" != 0 -a "$KND" = "" ]
+then
+  echo "Error: Kundeangivelse mangler!"
+  exit 2
+fi
+
+echo "$ALIAS" | tr '=' ' ' | tr '"' ' ' | while read line
+do
+  case "$line" in
+    '#'|'#'*|""|" "|"  ") if [ "$LNUM" != 0 ]
+                          then :
+                          else echo $line
+                          fi;;
+    *) set - $line;
+       LNR=`expr $LNR + 1`;
+       case "$LNR" in
+         ?????) LINR="  $LNR";;
+          ????) LINR="   $LNR";;
+           ???) LINR="   $LNR";;
+            ??) LINR="    $LNR";;
+             ?) LINR="     $LNR";;
+       esac;
+       ALI=$1;
+       shift;
+       case "$1" in
+          ?????????????????????????) AL="$1";;
+           ????????????????????????) AL="$1 ";;
+            ???????????????????????) AL="$1  ";;
+             ??????????????????????) AL="$1   ";;
+              ?????????????????????) AL="$1    ";;
+               ????????????????????) AL="$1     ";;
+                ???????????????????) AL="$1      ";;
+                 ??????????????????) AL="$1       ";;
+                  ?????????????????) AL="$1        ";;
+                   ????????????????) AL="$1         ";;
+                    ???????????????) AL="$1          ";;
+                     ??????????????) AL="$1           ";;
+                      ?????????????) AL="$1            ";;
+                       ????????????) AL="$1             ";;
+                        ???????????) AL="$1              ";;
+                         ??????????) AL="$1               ";;
+                          ?????????) AL="$1                ";;
+                           ????????) AL="$1                 ";;
+                            ???????) AL="$1                  ";;
+                             ??????) AL="$1                   ";;
+                              ?????) AL="$1                    ";;
+                               ????) AL="$1                     ";;
+                                ???) AL="$1                      ";;
+                                 ??) AL="$1                       ";;
+                                  ?) AL="$1                        ";;
+                                  *) AL="$1";;
+       esac;
+       shift;
+       case "$1" in
+         ???????) CM="$1";;
+          ??????) CM="$1 ";;
+           ?????) CM="$1  ";;
+            ????) CM="$1   ";;
+             ???) CM="$1    ";;
+              ??) CM="$1     ";;
+               ?) CM="$1      ";;
+               *) CM="$1";;
+       esac;
+       shift;
+       echo "$LNR  $line" >> "$TEMPFILE0";
+       if [ "$LNUM" != 0 ]
+       then :
+       else echo "$LINR  $ALI  $AL $CM $*"
+       fi;;
+  esac
+done
+
+if [ "$LNUM" != 0 ]
+then
+  LINJE=`egrep "^$LNUM  " "$TEMPFILE0" 2>/dev/null`
+  echo ""
+  echo "   $LINJE"
+  case "$LINJE" in
+    *'#'*) LINJE=`expr "$LINJE" : ".* alias \(.*\)\#.*"`;;
+     *'#') LINJE=`expr "$LINJE" : ".* alias \(.*\)."`;;
+        *) LINJE=`expr "$LINJE" : ".* alias \(.*\)"`;;
+  esac
+
+  COMMD=`echo $LINJE | while read LN
+         do
+           set - $LN
+           shift
+           echo "$*"
+         done`
+  Host=`expr "$LINJE" : "\(.*\) $COMMD"`
+
+  COMMD2=`echo $COMMD | while read LN
+         do
+           set - $LN
+           if [ "$#" = 1 ]
+           then
+             egrep "^alias $LN=" /home/cdp/FLS/hosts 2>/dev/null
+           else
+             echo ""
+           fi
+         done`
+
+  if [ "$COMMD2" != "" ]
+  then
+    case "$COMMD2=" in
+          *) COMMD2=`expr "$COMMD2" : "alias $COMMD..\(.*\)\".*"`;;
+    esac
+    COMMD="$COMMD2"
+  fi
+
+  echo ""
+  echo "Alias no.: $LNUM        Host: $Host"
+  echo "Command  : $COMMD"
+  echo ""
+  echo -n "Continue? y/n  "
+  read dummy
+  DUMMY=`echo "$dummy" | awk '{print tolower($0)}'`
+  case "$DUMMY" in
+    y|yes|j|ja|"") clear;
+           echo "alias $LINJE";
+           echo $COMMD;
+           $COMMD;;
+        *) ;;
+  esac
+fi
+
+exit 0
+
+
+
