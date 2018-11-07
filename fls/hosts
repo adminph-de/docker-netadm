@@ -1,0 +1,62 @@
+#============================
+# Germany
+#============================
+# SCN :
+#------
+alias scn2-netadm01="ssh 10.49.50.15"                   # Linux Jump-Host
+alias scn-as01="ssh admin@10.49.32.1"			# ASA Firewall 
+alias scn-rdb01="ssh admin@10.49.55.62"                 # RiverbedBackup
+alias scn-cs01="telnet 10.49.255.1"                     # IOSBackup Germany SCN
+alias scn-cs02="telnet 10.49.255.2"                     # IOSBackup Germany SCN
+alias scn-srv-da01="telnet 10.49.32.134"		# IOSBackup Germany SCN
+alias scn-srv-da02="telnet 10.49.32.135"                # IOSBackup Germany SCN
+alias scn-b1repo-as01="telnet 10.49.0.140"              # IOSBackup Germany SCN
+alias scn-b1edv-as01="telnet 10.49.0.141"               # IOSBackup Germany SCN
+alias scn-b1srv-as01="telnet 10.49.0.142"               # IOSBackup Germany SCN
+alias scn-b1f0-as01="telnet 10.49.0.143"                # IOSBackup Germany SCN
+alias scn-b1f1-as01="telnet 10.49.0.144"                # IOSBackup Germany SCN
+alias scn-b1f2-as01="telnet 10.49.0.145"                # IOSBackup Germany SCN
+alias scn-b1f3-as01="telnet 10.49.0.146"                # IOSBackup Germany SCN
+alias scn-b2f0-as01="telnet 10.49.0.147"                # IOSBackup Germany SCN
+alias scn-b2srv-as02="telnet 10.49.0.149"               # IOSBackup Germany SCN
+alias scn-b2srv-as04="telnet 10.49.0.152"		# IOSBackup Germany SCN
+alias scn-b3tec-as01="telnet 10.49.0.153"               # IOSBackup Germany SCN
+alias scn-b3tec-as02="telnet 10.49.0.154"               # IOSBackup Germany SCN
+alias scn-b6f0-as01="telnet 10.49.0.155"                # IOSBackup Germany SCN
+alias scn-b6f1-as01="telnet 10.49.0.156"                # IOSBackup Germany SCN
+alias scn-b7f0-as01="telnet 10.49.0.157"                # IOSBackup Germany SCN
+alias scn-b7f1-as01="telnet 10.49.0.158"                # IOSBackup Germany SCN
+alias scn-b10af0-as01="telnet 10.49.0.159"              # IOSBackup Germany SCN
+alias scn-b10ff0-as01="telnet 10.49.0.160"              # IOSBackup Germany SCN
+alias scn-b10bf0-as01="telnet 10.49.0.161"              # IOSBackup Germany SCN
+alias scn-b2lab-as01="telnet 10.49.0.162"               # IOSBackup Germany SCN
+alias scn-b2lab-as02="telnet 10.49.0.169"               # IOSBackup Germany SCN
+#
+# SCN2 :
+#-------
+alias scn2-r1c17-edgertr01="telnet 10.49.255.8"         # IOSBackup Germany SCN
+alias scn2-r1c17-cs01="telnet 10.49.255.3"              # IOSBackup Germany SCN2
+alias scn2-r1c19-as01="telnet 10.49.32.136"		# IOSBackup Germany SCN2
+alias scn2-r1c20-as01="telnet 10.49.32.137"             # IOSBackup Germany SCN2
+#
+# SCN2 ESXi Hosts :
+#------------------
+alias scn2-esx01="ssh root@scn2-esx01.dk.flsmidth.net"    # ESXi
+alias scn2-esx02="ssh root@scn2-esx02.dk.flsmidth.net"    # ESXi
+alias scn2-esx03="ssh root@scn2-esx03.dk.flsmidth.net"    # ESXi
+alias scn2-esx04="ssh root@scn2-esx04.dk.flsmidth.net"    # ESXi
+alias scn2-esx05="ssh root@scn2-esx05.dk.flsmidth.net"    # ESXi
+alias scn2-esx06="ssh root@scn2-esx06.dk.flsmidth.net"    # ESXi
+alias scn2-esx07="ssh root@scn2-esx07.dk.flsmidth.net"    # ESXi
+alias scn2-esx08="ssh root@scn2-esx08.dk.flsmidth.net"    # ESXi
+alias scn2-esx09="ssh root@scn2-esx09.dk.flsmidth.net"    # ESXi
+alias scn2-esx10="ssh root@scn2-esx10.dk.flsmidth.net"    # ESXi
+alias scn2-esx11="ssh root@scn2-esx11.dk.flsmidth.net"    # ESXi
+#
+# SCN2 RDS Hosts :
+#-----------------
+alias scn2-r1c18-sdc01="rdesktop -k de -u Administrator -d DATACORE -g 1280x1024 scn-sdc01.dk.flsmidth.net" #DataCore
+alias scn2-r1c18-sdc02="rdesktop -k de -u Administrator -d DATACORE -g 1280x1024 scn-sdc02.dk.flsmidth.net" #DataCore
+alias scn2-r1c18-sdc03="rdesktop -k de -u Administrator -d DATACORE -g 1280x1024 scn-sdc03.dk.flsmidth.net" #DataCore
+alias scn2-r1c18-sdc04="rdesktop -k de -u Administrator -d DATACORE -g 1280x1024 scn-sdc04.dk.flsmidth.net" #DataCore
+
