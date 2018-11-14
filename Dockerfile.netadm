@@ -1,5 +1,17 @@
 # create your custom drupal image here, based of official drupal
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y git curl wget iperf traceroute inetutils-ping \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl wget iperf traceroute inetutils-ping vim grep mount awk \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir /usr/local/fls \
+	&& mkdir /usr/local/fls/bin
+
+WORKDIR /usr/local/fls
+
+COPY ./fls/ ./
+COPY ./fls/bin/* ./bin/
+
+RUN chmod 755 /usr/local/fls/bin/a \
+    && export PATH=$PATH:/usr/local/fls/bin
+
+WORKDIR /
